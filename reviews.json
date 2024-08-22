@@ -1,0 +1,65 @@
+{
+    "reviews": [
+      {
+        "professor": "Dr. Alice Johnson",
+        "subject": "Computer Science",
+        "stars": 5,
+        "review": "Dr. Johnson is an excellent professor who makes complex topics easy to understand. Her lectures are engaging, and she is always available for extra help."
+      },
+      {
+        "professor": "Prof. Michael Brown",
+        "subject": "Mathematics",
+        "stars": 4,
+        "review": "Prof. Brown is very knowledgeable and passionate about math. Sometimes the pace of the class is a bit fast, but overall a great learning experience."
+      },
+      {
+        "professor": "Dr. Sarah Lee",
+        "subject": "Physics",
+        "stars": 3,
+        "review": "Dr. Lee knows her material well but can be hard to follow at times. The class is challenging, but if you put in the effort, you can do well."
+      },
+      {
+        "professor": "Prof. David Smith",
+        "subject": "History",
+        "stars": 2,
+        "review": "Prof. Smith's lectures are a bit dry, and he tends to stick to the textbook too much. The course could use more interactive elements."
+      },
+      {
+        "professor": "Dr. Emily Davis",
+        "subject": "English Literature",
+        "stars": 4,
+        "review": "Dr. Davis is passionate about literature and encourages deep analysis of texts. Her assignments are tough but fair, and she provides good feedback."
+      },
+      {
+        "professor": "Prof. Robert Williams",
+        "subject": "Economics",
+        "stars": 1,
+        "review": "Prof. Williams is not very engaging and often seems disorganized. The lectures feel disconnected, and it's hard to follow along."
+      },
+      {
+        "professor": "Dr. Linda Martinez",
+        "subject": "Biology",
+        "stars": 5,
+        "review": "Dr. Martinez is fantastic! Her enthusiasm for biology is contagious, and she makes the material accessible and interesting. Highly recommend."
+      },
+      {
+        "professor": "Prof. James Wilson",
+        "subject": "Philosophy",
+        "stars": 3,
+        "review": "Prof. Wilson is knowledgeable, but his teaching style is very lecture-heavy. If you prefer a more discussion-based class, this might not be for you."
+      },
+      {
+        "professor": "Dr. Karen Taylor",
+        "subject": "Chemistry",
+        "stars": 4,
+        "review": "Dr. Taylor is a great teacher who is always willing to help. Her labs are well-structured, and she explains the concepts clearly."
+      },
+      {
+        "professor": "Prof. William Clark",
+        "subject": "Psychology",
+        "stars": 2,
+        "review": "Prof. Clark's lectures can be hard to follow, and he doesn't always explain the material clearly. The class was a bit disappointing overall."
+      }
+    ]
+  }
+  
