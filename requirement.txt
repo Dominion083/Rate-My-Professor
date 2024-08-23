@@ -4,6 +4,8 @@ importlib-metadata==8.0.0
 importlib-resources==6.4.0
 ipykernel==6.29.5
 jaraco.text==3.12.1
+langchain-community==0.2.12
+langchain-huggingface==0.0.3
 lz4==4.3.3
 openai==1.42.0
 ordered-set==4.1.0
