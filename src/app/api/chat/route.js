@@ -70,14 +70,14 @@ export async function POST(req) {
 
     let resultString = ''
     results.matches.forEach((match) => {
-    resultString += `
-    Returned Results:
-    Professor: ${match.id}
-    Review: ${match.metadata.stars}
-    Subject: ${match.metadata.subject}
-    Stars: ${match.metadata.stars}
-    \n\n`
-    })
+        resultString += `
+        Returned Results:
+        Professor: ${match.id}
+        Review: ${match.metadata.stars}
+        Subject: ${match.metadata.subject}
+        Stars: ${match.metadata.stars}
+        \n\n`
+        })
 
     const lastMessage = data[data.length - 1]
     const lastMessageContent = lastMessage.content + resultString
