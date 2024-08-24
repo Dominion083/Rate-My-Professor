@@ -163,7 +163,7 @@ export default function Home() {
               </IconButton>
             </Stack>
           </Box>
-        </Paper>
+        </Paper> 
       </Box>
     </ThemeProvider>
   );
