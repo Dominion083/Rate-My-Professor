@@ -1,139 +1,170 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+
+import { useState, useRef, useEffect } from "react";
+import { Box, TextField, Button, Stack, Typography, Paper, IconButton } from "@mui/material";
+import SendIcon from '@mui/icons-material/Send';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#388e3c',
+    },
+  },
+});
 
 export default function Home() {
   const [messages, setMessages] = useState([
-    {role: "assistant",
-    content: "Hello, I am the Rate my professor support system. How can I help you today?",
+    {
+      role: "assistant",
+      content: "Hello, I am the Rate my professor support system. How can I help you today?",
     }
-  ])
-  const [message, setMessage] = useState('')
+  ]);
+  const [message, setMessage] = useState('');
+  const messagesEndRef = useRef(null);
 
-  const sendMessage = async()=>{
-    setMessages((messages)=>[
-      ...messages,
-      {role:"user",content: message},
-      {role:"assistant", content:''}
-    ])
-    setMessage('')
-    const response = fetch ('/api/chat',{
-      method: "POST",
-      headers: {
-        'Content-Type':'application/json'
-      },
-      body:JSON.stringify([...messages,{role:"user",content:message}])
-    }).then(async(res) => {
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-      let result = ''
-      return reader.read().then(function processText({done, value}){
-        if (done){
-          return result 
-        }
-        const text =decoder.decode(value|| new Uint8Array(),{stream:true})
-        setMessages((messages)=>{
-          let lastMessage = messages[messages.length - 1]
-          let otherMessages = messages.slice(0, message.length - 1)
+  useEffect(scrollToBottom, [messages]);
+
+  const sendMessage = async () => {
+    if (message.trim() === '') return;
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { role: "user", content: message },
+      { role: "assistant", content: '' }
+    ]);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify([...messages, { role: "user", content: message }])
+      });
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      let result = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const text = decoder.decode(value, { stream: true });
+        result += text;
+        setMessages((prevMessages) => {
+          const lastMessage = prevMessages[prevMessages.length - 1];
           return [
-            ...otherMessages,
-            {...lastMessage, content: lastMessage.content + text},
-          ]
-        })
-        return reader.read().then(processText)
-      })
-    })
+            ...prevMessages.slice(0, -1),
+            { ...lastMessage, content: lastMessage.content + text },
+          ];
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
-  }
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      sendMessage();
+    }
+  };
 
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <ThemeProvider theme={theme}>
+      <Box
+        sx={{
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          bgcolor: '#f5f5f5',
+        }}
+      >
+        <Paper
+          elevation={3}
+          sx={{
+            width: "90%",
+            maxWidth: "600px",
+            height: "80vh",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+        >
+          <Typography variant="h5" sx={{ p: 2, borderBottom: '1px solid #e0e0e0', bgcolor: 'primary.main', color: 'white' }}>
+            Rate My Professor Chat
+          </Typography>
+          <Stack
+            direction="column"
+            spacing={2}
+            sx={{
+              p: 2,
+              overflow: "auto",
+              flexGrow: 1,
+            }}
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+            {messages.map((message, index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: "flex",
+                  justifyContent: message.role === "assistant" ? 'flex-start' : 'flex-end',
+                }}
+              >
+                <Paper
+                  elevation={1}
+                  sx={{
+                    bgcolor: message.role === "assistant" ? "primary.light" : "secondary.light",
+                    color: 'text.primary',
+                    borderRadius: 2,
+                    p: 1.5,
+                    maxWidth: '70%',
+                  }}
+                >
+                  <Typography variant="body1">
+                    {message.content}
+                  </Typography>
+                </Paper>
+              </Box>
+            ))}
+            <div ref={messagesEndRef} />
+          </Stack>
+          <Box sx={{ p: 2, borderTop: '1px solid #e0e0e0' }}>
+            <Stack direction="row" spacing={1}>
+              <TextField
+                label="Type your message"
+                fullWidth
+                variant="outlined"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                sx={{ bgcolor: 'white' }}
+              />
+              <IconButton
+                color="primary"
+                onClick={sendMessage}
+                disabled={message.trim() === ''}
+                sx={{ bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' } }}
+              >
+                <SendIcon />
+              </IconButton>
+            </Stack>
+          </Box>
+        </Paper>
+      </Box>
+    </ThemeProvider>
   );
 }

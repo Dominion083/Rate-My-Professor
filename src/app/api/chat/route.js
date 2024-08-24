@@ -6,8 +6,6 @@ import { cat } from "@xenova/transformers";
 
 
 
-
-
 const systemPromt = `
 System Prompt for Rate My Professor Agent:
 
