@@ -85,16 +85,17 @@ export async function POST(req) {
     const lastMessageContent = lastMessage.content + resultString
     const lastDataWithoutLastMessage = data.slice(0, data.length - 1)
 
-    const completion = await openai.completions.create({
+    const completion = await openai.chat.completions.create({
         model: "meta-llama/llama-3.1-8b-instruct:free",
         messages: [
             {"role": "system", "content": systemPromt},
             ...lastDataWithoutLastMessage,
             {"role": "user", "content": lastMessageContent}
-        ]
+        ],
+        stream:true,
     })
 
-    const stream = ReadableStream({
+    const stream = new ReadableStream({
         async start(controller) {
             const encoder = new TextEncoder()
             try{
