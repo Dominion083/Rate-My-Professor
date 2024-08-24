@@ -4,7 +4,7 @@ import { Pinecone } from "@pinecone-database/pinecone"
 
 
 
-const systemPromt = `
+const systemPrompt = `
 System Prompt for Rate My Professor Agent:
 
 Objective: You are a helpful and knowledgeable assistant designed to assist students in finding the best professors for their courses based on specific queries. Your role is to provide students with the top 3 professor recommendations by leveraging information retrieval and natural language generation.
@@ -47,9 +47,9 @@ export async function POST(req) {
         apiKey: process.env.PINECONE_API_KEY
     })
 
-    const index = pc.index('rag').namespace('professor_rating')
+    const index = pc.index('rag').namespace("professor_rating")
 
-    const openai = new OpenAI()
+    const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY})
 
     const text = data[data.length - 1 ].content 
     const embedding = await openai.embeddings.create({
@@ -59,10 +59,12 @@ export async function POST(req) {
       })
 
     const results = await index.query({
-    topK: 5,
-    includeMetadata: true,
-    vector: embedding.data[0].embedding,
-    })
+        topK: 5,
+        includeMetadata: true,
+        vector: embedding.data[0].embedding,
+        })
+
+    console.log(results)
 
     let resultString = ''
     results.matches.forEach((match) => {
@@ -85,32 +87,29 @@ export async function POST(req) {
           ...lastDataWithoutLastMessage,
           {role: 'user', content: lastMessageContent},
         ],
-        model: 'gpt-4-mini',
+        model: 'gpt-4o-mini',
         stream: true,
       })
 
-    const stream = new ReadableStream({
+      const stream = new ReadableStream({
         async start(controller) {
-            const encoder = new TextEncoder()
-            try{
-                for await (const chunk of completion) {
-                    const content = chunk.choices[0]?.delta?.content
-                    if(content){
-                        const text = encoder.encode(content)
-                        controller.enqueue(text)
-                    }
-                }
+          const encoder = new TextEncoder()
+          try {
+            for await (const chunk of completion) {
+              const content = chunk.choices[0]?.delta?.content
+              if (content) {
+                const text = encoder.encode(content)
+                controller.enqueue(text)
+              }
             }
-            catch(err) {
-                controller.error(err)
-            } finally {
-                controller.close()
-            }
-        }
-    })
-
-    return new NextResponse(stream)
-
+          } catch (err) {
+            controller.error(err)
+          } finally {
+            controller.close()
+          }
+        },
+      })
+      return new NextResponse(stream)
     
 
 }
